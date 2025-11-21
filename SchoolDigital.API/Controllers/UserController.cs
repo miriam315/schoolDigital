@@ -1,5 +1,5 @@
-﻿using SchoolDigital.Entities;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using SchoolDigital.Core.Service;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -9,25 +9,25 @@ namespace SchoolDigital.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        public IDataContext _context { get; set; }
-        public UserController(IDataContext context)
+        public readonly IUserService _userService;
+        public UserController(IUserService userService)
         {
-            _context = context;
+            _userService=userService;
         }
         // GET: api/<UserController>
         [HttpGet]
-        public IEnumerable<User> Get()
+        public ActionResult Get()
         {
-            return _context.users;
+            return Ok(_userService.getAll());
         }
 
         // GET api/<UserController>/5
         [HttpGet("{id}")]
         public ActionResult Get(int id)
         {
-            var user = _context.users.FirstOrDefault(u => u.Id == id)!;
+            var user = _userService.GetUsers().FirstOrDefault(u => u.Id == id)!;
             if(user!=null)
-                return Ok(user);
+                return Ok(_userService.getAll());
             return NotFound();
         }
 

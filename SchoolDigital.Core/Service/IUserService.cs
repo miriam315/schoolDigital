@@ -9,7 +9,12 @@ namespace SchoolDigital.Core.Service
 {
     public interface IUserService
     {
-        public List<User> GetAllUsers();
-        public User GetById(int id);
+        IEnumerable<User> GetUsers();
+        User? GetById(int id);
+
+        User Add(User user);
+        User? Update(int id, User user);
+        void Delete(User user);
+       
     }
 }

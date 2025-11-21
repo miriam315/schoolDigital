@@ -1,4 +1,5 @@
-﻿using SchoolDigital.Core;
+﻿using Microsoft.EntityFrameworkCore;
+using SchoolDigital.Core;
 using SchoolDigital.Core.Entities;
 
 
@@ -6,10 +7,14 @@ namespace SchoolDigital
 {
     public class DataContext:DbContext
     {
-        public List<Lesson> lessons { get; set; }
-        public List<User> users { get; set; }
-        public List<Attendance> attendanceList { get; set; }
-        public List<Material> materialsList { get; set; }
+        public DbSet<Lesson> lessons { get; set; }
+        public DbSet<User> users { get; set; }
+        public DbSet<Attendance> attendanceList { get; set; }
+        public DbSet<Material> materialsList { get; set; }
+        public override void OnConFiguruing(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=")
+        }
 
     }
 }

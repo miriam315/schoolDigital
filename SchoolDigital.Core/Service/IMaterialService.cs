@@ -9,7 +9,11 @@ namespace SchoolDigital.Core.Service
 {
     public interface IMaterialService
     {
-        public List<Material> GetAllTeachers();
-        public Material GetById(int id);
+        IEnumerable<Material> GetUsers();
+        Material? GetById(int id);
+
+        Material Add(Material meterial);
+        Material? Update(int id, Material meterial);
+        void Delete(Material meterial);
     }
 }

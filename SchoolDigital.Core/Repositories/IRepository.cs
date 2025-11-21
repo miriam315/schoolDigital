@@ -7,9 +7,12 @@ using System.Threading.Tasks;
 
 namespace SchoolDigital.Core.Repositories
 {
-    public interface ILessonsRepository
+    public interface IRepository<T> where T : class
     {
-        public List<Lesson> GetAllUsers();
-        public Lesson GetById(int id);
+        IEnumerable<T> GetAll();
+        T? GetById(int id);
+        T Add(T entity);
+        T Update(T entity);
+        void Delete(T entity);
     }
 }
