@@ -1,8 +1,7 @@
 ﻿namespace SchoolDigital.Core.Entities
 {
-    public class Material
+    public class Material:BaseEntity
     {
-        public int Id { get; set; }
         public int LessonId { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty; // pdf / video / link

@@ -1,8 +1,7 @@
 ﻿namespace SchoolDigital.Core.Entities
 {
-    public class Lesson
+    public class Lesson:BaseEntity
     {
-        public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public int TeacherId { get; set; }
         public DateTime Date { get; set; }

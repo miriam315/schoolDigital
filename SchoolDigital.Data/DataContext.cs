@@ -11,10 +11,10 @@ namespace SchoolDigital
         public DbSet<User> users { get; set; }
         public DbSet<Attendance> attendanceList { get; set; }
         public DbSet<Material> materialsList { get; set; }
-        public override void OnConFiguruing(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=")
-        }
+        //public override void OnConFiguruing(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=")
+        //}
 
     }
 }

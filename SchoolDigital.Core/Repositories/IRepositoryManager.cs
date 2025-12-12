@@ -13,5 +13,8 @@ namespace SchoolDigital.Core.Repositories
         IRepository<Attendance> Attendances { get; }
         IRepository<Lesson> Lessons { get; }
         IRepository<Material> Materials { get; }
+
+        public void SaveChanges();
+
     }
 }

@@ -9,19 +9,32 @@ using System.Threading.Tasks;
 
 namespace SchoolDigital.Data.Repositories
 {
-    public class RepositoryManager(DataContext context, IRepository<T> Trepository) : IRepositoryManager
+    public class RepositoryManager : IRepositoryManager
     {
-        private readonly DataContext _context=context;
-        public IRepository<User> Users => Trepository;
+        private readonly DataContext _context;
+        private IRepository<User> _user;
+        private IRepository<Lesson> _lesson;
+        private IRepository<Material> _material;
+        private IRepository<Attendance> _attendance;
 
-        public IRepository<Attendance> Attendances =>Trepository;
-
-        public IRepository<Lesson> Lessons => Trepository;
-
-        public IRepository<Material> Materials => Trepository;
-        public void Save()
+        public RepositoryManager(DataContext context)
         {
-            _context.SaveChanges();
+            _context = context;
+        }
+
+        public IRepository<User> Users =>
+        _user ??= new Repository<User>(_context);
+        public IRepository<Attendance> Attendances =>
+      _attendance ??= new Repository<Attendance>(_context);
+        public IRepository<Lesson> Lessons =>
+      _lesson ??= new Repository<Lesson>(_context);
+        public IRepository<Material> Materials =>
+      _material ??= new Repository<Material>(_context);
+
+        public void SaveChanges()
+        {
+            throw new NotImplementedException();
         }
     }
 }
+
