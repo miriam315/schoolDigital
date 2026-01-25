@@ -1,63 +1,56 @@
 ﻿using SchoolDigital.Core.Entities;
 using SchoolDigital.Core.Repositories;
 using SchoolDigital.Core.Service;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SchoolDigital.Service.Service
 {
-    public class UserService
+    public class UserService : IUserService
     {
         private readonly IRepositoryManager _irepositoryManager;
+
+        // בנאי אחד בלבד שמקבל את המנהל של ה-Repositories
         public UserService(IRepositoryManager irepositoryManager)
         {
             _irepositoryManager = irepositoryManager;
         }
 
+        public IEnumerable<User> GetUsers() => _irepositoryManager.Users.GetAll();
 
-        public User GetUser(int id)
-        {
-            return _irepositoryManager.Users.GetById(id);
-        }
+        public User? GetById(int id) => _irepositoryManager.Users.GetById(id);
 
-        public IEnumerable<User> GetAllUsers()
-        {
-            return _irepositoryManager.Users.GetAll();
-        }
-
-        public User CreateUser(User user)
+        public User Add(User user)
         {
             _irepositoryManager.Users.Add(user);
             _irepositoryManager.SaveChanges();
             return user;
         }
 
-        public User UpdateUser(User user)
+        public User? Update(int id, User user)
         {
-            var exists = _irepositoryManager.Users.Exists(user.Id);
-            if (!exists)
-                return null;
+            var exists = _irepositoryManager.Users.GetById(id);
+            if (exists == null) return null;
 
             _irepositoryManager.Users.Update(user);
             _irepositoryManager.SaveChanges();
             return user;
         }
 
-        public bool DeleteUser(int id)
+        // מימוש מחיקה לוגית (שינוי סטטוס) כפי שמופיע באפיון וב-UserRepository המקורי
+        public void Delete(User user)
         {
-            var deleted = _irepositoryManager.Users.Delete(id);
-            if (deleted)
-                _irepositoryManager.SaveChanges();
-            return deleted;
+            // אם תרצה מחיקה לוגית (Soft Delete):
+            user.Status = EStatus.inactive;
+            _irepositoryManager.Users.Update(user);
+
+            // מחיקה פיזית מהמסד:
+            //_irepositoryManager.Users.Delete(user);
+            //_irepositoryManager.SaveChanges();
         }
 
-        public IEnumerable<User> SearchProducts(string name)
+        // חיפוש משתמש לפי שם וסיסמה באמצעות ה-Find הכללי
+        public User? SearchUser(string pas, string name)
         {
-            return _irepositoryManager.Users.Find(p => p.Name.Contains(name));
+            return _irepositoryManager.Users.Find(u => u.Password == pas && u.Name == name).FirstOrDefault();
         }
-
     }
 }

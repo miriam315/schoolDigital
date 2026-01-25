@@ -33,7 +33,7 @@ namespace SchoolDigital.Data.Repositories
 
         public void SaveChanges()
         {
-            throw new NotImplementedException();
+            _context.SaveChanges();
         }
     }
 }

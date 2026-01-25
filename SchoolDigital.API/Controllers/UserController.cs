@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SchoolDigital.Core.Entities;
 using SchoolDigital.Core.Service;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace SchoolDigital.Controllers
 {
@@ -10,64 +9,59 @@ namespace SchoolDigital.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+
         public UserController(IUserService userService)
         {
-            _userService=userService;
+            _userService = userService;
         }
-        // GET: api/<UserController>
+
+        // GET: api/User
         [HttpGet]
-        public ActionResult Get()
+        public ActionResult<IEnumerable<User>> Get()
         {
-            return Ok(_userService.getAll());
+            return Ok(_userService.GetUsers());
         }
 
-        // GET api/<UserController>/5
+        // GET api/User/5
         [HttpGet("{id}")]
-        public ActionResult Get(int id)
+        public ActionResult<User> Get(int id)
         {
-            var user = _userService.GetUsers().FirstOrDefault(u => u.Id == id)!;
-            if(user!=null)
-                return Ok(_userService.getAll());
-            return NotFound();
+            var user = _userService.GetById(id);
+            if (user == null) return NotFound();
+            return Ok(user);
         }
 
-        // POST api/<UserController>
+        // POST api/User
         [HttpPost]
-        public ActionResult Post([FromBody] User value)
+        public ActionResult Post([FromBody] User newUser)
         {
-            var u = _context.users.Find(x=>x.Id == value.Id);
-            if (u != null)
-                return Conflict();
-            _context.users.Add(value);
-            return Ok();
+            // בדיקה אם משתמש עם אותם פרטים כבר קיים
+            var existing = _userService.SearchUser(newUser.Password, newUser.Name);
+            if (existing != null)
+                return Conflict("משתמש זה כבר רשום במערכת.");
+
+            var created = _userService.Add(newUser);
+            return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
         }
 
-        // PUT api/<UserController>/5
+        // PUT api/User/5
         [HttpPut("{id}")]
         public ActionResult Put(int id, [FromBody] User value)
         {
-            var index = _context.users.FindIndex(u => u.Id == id);
-            if (index >= 0)
-            {
-                _context.users[index].Name = value.Name;
-                _context.users[index].Role = value.Role;
-                _context.users[index].Email = value.Email;
-                return Ok();
-            }
-            return NotFound();
+            var updated = _userService.Update(id, value);
+            if (updated == null) return NotFound();
+            return Ok(updated);
         }
 
-        // DELETE api/<UserController>/5
+        // DELETE api/User/5
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
-            var user = _context.users.FirstOrDefault(u => u.Id == id);
-            if (user != null)
-            {
-                _context.users.Remove(user);
-                return Ok();
-            }
-            return BadRequest();
+            var user = _userService.GetById(id);
+            if (user == null) return NotFound();
+
+            _userService.Delete(user);
+            return NoContent();
         }
     }
 }

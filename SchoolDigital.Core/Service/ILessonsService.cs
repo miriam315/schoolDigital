@@ -9,11 +9,11 @@ namespace SchoolDigital.Core.Service
 {
     public interface ILessonsService
     {
-        IEnumerable<Lesson> GetUsers();
+        IEnumerable<Lesson> GetLessons();
         Lesson? GetById(int id);
-
+        IEnumerable<Lesson> SearchLesson(string name);
         Lesson Add(Lesson lesson);
-        Lesson? Update(int id, Lesson lesson);
+        Lesson? Update(Lesson lesson);
         void Delete(Lesson lesson);
     }
 }

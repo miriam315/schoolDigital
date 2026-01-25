@@ -1,6 +1,7 @@
 ﻿using SchoolDigital.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using SchoolDigital.Core.Service;
+using SchoolDigital.Service.Service;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -10,59 +11,47 @@ namespace SchoolDigital.Controllers
     [ApiController]
     public class AttendanceController : ControllerBase
     {
-        private readonly  _usercontext;
-        public AttendanceController(IUserService userService)
+        private readonly IAttendanceService _attendanceService;
+
+        public AttendanceController(IAttendanceService attendanceService)
         {
-            _usercontext = userService;
+            _attendanceService = attendanceService;
         }
 
-        // GET: api/<AttendanceController>
+        // GET: api/lessons/5/Attendance
+        // שליפת דוח נוכחות לשיעור ספציפי
         [HttpGet]
-        public IEnumerable<Attendance> Get(int lessonId) => _context.attendances.Where(a => a.LessonId == lessonId);
+        public ActionResult<IEnumerable<Attendance>> Get(int lessonId)
+        {
+            var attendanceList = _attendanceService.GetByLessonId(lessonId);
+            return Ok(attendanceList);
+        }
 
-
-        // GET api/<AttendanceController>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
-
-        // POST api/<AttendanceController>
+        // POST: api/lessons/5/Attendance
+        // הזנת נוכחות חדשה לתלמיד בשיעור
         [HttpPost]
         public ActionResult Post(int lessonId, [FromBody] Attendance value)
         {
-            var attendance = _context.attendances.Find(a => a.Id == value.Id && a.LessonId == lessonId);
-            if (attendance != null)
-                return Ok(attendance);
-            return NotFound();
+            value.LessonId = lessonId; // וידוא שיוך לשיעור מהנתיב
+            var result = _attendanceService.Add(value);
+            return Ok(result);
         }
 
-        // PUT api/<AttendanceController>/5
+        // PUT: api/lessons/5/Attendance/10
+        // עדכון סטטוס נוכחות (למשל מ"נעדר" ל"נוכח")
         [HttpPut("{id}")]
         public ActionResult Put(int lessonId, int id, [FromBody] Attendance value)
         {
-            var index = _context.attendances.FindIndex(a => a.Id == id && a.LessonId == lessonId);
-            if (index >= 0)
-            {
-                _context.attendances[index].StudentId = value.StudentId;
-                _context.attendances[index].Status = value.Status;
-                return Ok();
-            }
-            return BadRequest();
-        }
+            if (id != value.Id) return BadRequest();
 
-        // DELETE api/<AttendanceController>/5
-        [HttpDelete("{id}")]
-        public ActionResult Delete(int lessonId, int id)
-        {
-            var record = _context.attendances.FirstOrDefault(a => a.Id == id && a.LessonId == lessonId);
-            if (record != null)
-            {
-                _context.attendances.Remove(record);
-                return Ok();
-            }
-            return BadRequest();
+            value.LessonId = lessonId;
+            var updated = _attendanceService.Update(value);
+
+            if (updated == null) return NotFound();
+            return Ok(updated);
         }
     }
 }
+
+
+

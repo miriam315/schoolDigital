@@ -1,4 +1,62 @@
-﻿using SchoolDigital.Entities;
+﻿using Microsoft.AspNetCore.Mvc;
+using SchoolDigital.Core.Entities;
+using SchoolDigital.Core.Service;
+using SchoolDigital.Service.Service;
+
+namespace SchoolDigital.Controllers
+{
+    [Route("api/lessons/{lessonId}/[controller]")]
+    [ApiController]
+    public class MaterialController : ControllerBase
+    {
+        private readonly IMaterialService _materialsService;
+
+        public MaterialController(IMaterialService materialsService)
+        {
+            _materialsService = materialsService;
+        }
+
+        // GET: api/lessons/1/Material
+        [HttpGet]
+        public ActionResult<IEnumerable<Material>> Get(int lessonId)
+        {
+            return Ok(_materialsService.GetMaterialsByLesson(lessonId));
+        }
+
+        // POST: api/lessons/1/Material
+        [HttpPost]
+        public ActionResult Post(int lessonId, [FromBody] Material value)
+        {
+            // וידוא שהחומר מקושר לשיעור הנכון מהנתיב
+            value.LessonId = lessonId;
+
+            var created = _materialsService.Add(value);
+            return Ok(created);
+        }
+
+        // PUT: api/lessons/1/Material/5
+        [HttpPut("{id}")]
+        public ActionResult Put(int lessonId, int id, [FromBody] Material value)
+        {
+            if (id != value.Id) return BadRequest();
+
+            value.LessonId = lessonId; // הבטחת שיוך לשיעור
+            var updated = _materialsService.Update(value);
+
+            if (updated == null) return NotFound();
+            return Ok(updated);
+        }
+
+        // DELETE: api/lessons/1/Material/5
+        [HttpDelete("{id}")]
+        public ActionResult Delete(int id)
+        {
+            _materialsService.Delete(id);
+            return NoContent();
+        }
+    }
+}
+/*using SchoolDigital.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -64,4 +122,4 @@ namespace SchoolDigital.Controllers
             return BadRequest();
         }
     }
-}
+}*/

@@ -9,11 +9,10 @@ namespace SchoolDigital.Core.Service
 {
     public interface IAttendanceService
     {
-        IEnumerable<Attendance> GetUsers();
-        Attendance? GetById(int id);
+        IEnumerable<Attendance> GetByLessonId(int lessonId);
 
+        Attendance? GetById(int id);
         Attendance Add(Attendance attendance);
-        Attendance? Update(int id, Attendance attendance);
-        void Delete(Attendance attendance);
+        Attendance? Update(Attendance attendance);
     }
 }
